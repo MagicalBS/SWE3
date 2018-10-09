@@ -11,9 +11,8 @@ namespace Linq
 
             var qry = new DemoLinq<MyTable>();
 
-            var filtered = qry
-                .Where(i => i.Age > 18 && i.Age < 30);
-
+            var filtered = qry.Where(herberto => herberto.Age > 18 && herberto.Age < 35 || herberto.FirstName == "Peter")
+                .Where(herberto => herberto.Age > 15 && herberto.Age < 25 || herberto.FirstName == "Hans");
 
             var lst = filtered.ToList();
 
