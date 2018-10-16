@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections;
 using System.Linq.Expressions;
+using System.Data.SQLite;
+using System.Reflection;
 
 namespace Linq
 {
@@ -49,6 +51,7 @@ namespace Linq
     internal class DemoLinqProvider : IQueryProvider
     {
         private string sqlStatement = "";
+        private static string dbName = "SWE3.sqlite";
 
         public IQueryable CreateQuery(Expression expression)
         {
@@ -79,13 +82,36 @@ namespace Linq
             visitor.Visit(expression);
             sqlStatement = visitor.GetSqlStatement();
 
-            return new MyTable[]
+            List<T> personList = new List<T>();
+
+            Type tableType = visitor.TableType;
+
+            using (var db = new SQLiteConnection($"Data Source={dbName};Version=3;"))
             {
-                new MyTable() { FirstName = "Peter", Age = 32 },
-                new MyTable() { FirstName = "Marie", Age = 38 },
+                db.Open();
+
+                var cmd = new SQLiteCommand(sqlStatement, db);
+                using (var rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        T instance = (T)Activator.CreateInstance(tableType);
+                        foreach (PropertyInfo prop in instance.GetType().GetProperties())
+                        {
+                            int index = rd.GetOrdinal(prop.Name);
+                            if (index >= 0)
+                            {
+                                object value = rd[index];
+                                prop.SetValue(instance, value);
+                            }
+                        }
+                        
+                        personList.Add(instance);
+                    }
+                }
             }
-            .OfType<T>()
-            .GetEnumerator();
+
+            return personList.OfType<T>().GetEnumerator();
         }
 
         public string GetSqlStatement()

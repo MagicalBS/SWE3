@@ -11,6 +11,8 @@ namespace Linq
         private string sqlStatement = "";
         private string tableName = "";
         private List<string> columnNames = new List<string>();
+        private Type tableType;
+        public Type TableType => tableType;
 
         public string GetNodeType(BinaryExpression b)
         {
@@ -79,9 +81,11 @@ namespace Linq
 
             if (c.Value.GetType().IsGenericType && (c.Value.GetType().GetGenericTypeDefinition() == typeof(DemoLinq<>)))
             {
+                tableType = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + c.Value.GetType().GetGenericArguments().Single().Name);
+
                 tableName = c.Value.GetType().GetGenericArguments().Single().GetCustomAttributes(true).OfType<Table>().FirstOrDefault().Name;
 
-                var tableProperty = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + c.Value.GetType().GetGenericArguments().Single().Name).GetProperties();
+                var tableProperty = tableType.GetProperties();
 
                 foreach (var prop in tableProperty)
                 {
