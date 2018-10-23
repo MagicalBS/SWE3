@@ -89,7 +89,7 @@ namespace Linq
 
                 foreach (var prop in tableProperty)
                 {
-                    columnNames.Add(prop.Name);
+                    columnNames.Add(prop.GetCustomAttributes(true).OfType<Column>().FirstOrDefault().name);
                 }
             }
             else
@@ -121,7 +121,7 @@ namespace Linq
 
         protected override Expression VisitMemberAccess(MemberExpression m)
         {
-            sqlStatement += m.Member.Name;
+            sqlStatement += m.Member.GetCustomAttributes(true).OfType<Column>().FirstOrDefault().name;
 
             return base.VisitMemberAccess(m);
         }

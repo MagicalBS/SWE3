@@ -98,6 +98,8 @@ namespace Linq
                         T instance = (T)Activator.CreateInstance(tableType);
                         foreach (PropertyInfo prop in instance.GetType().GetProperties())
                         {
+                            // TODO: handle nullable
+
                             int index = rd.GetOrdinal(prop.Name);
                             if (index >= 0)
                             {
