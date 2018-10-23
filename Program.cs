@@ -14,10 +14,21 @@ namespace Linq
 
             CreateDatabaseIfNotExists();
 
+            #region OR Mapper Insert
+            var orMapper = new ORMapper("SWE3.sqlite");
+
+            orMapper.Insert(new MyTable
+            {
+                FirstName = "Peppi",
+                LastName = "Huber",
+                Age = 55
+            });
+
+            #endregion
+
             var qry = new DemoLinq<MyTable>();
 
-            var filtered = qry.Where(herberto => herberto.Age > 18)
-                .Where(herberto => herberto.Age < 15 && herberto.FirstName == "Peter");
+            var filtered = qry.Where(herberto => herberto.Age > 50);
 
             var lst = filtered.ToList();
 

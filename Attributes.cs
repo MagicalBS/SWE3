@@ -19,16 +19,16 @@ namespace Linq
 
     public class Column : Attribute
     {
-        private string name;
+        public string Name;
 
         public Column(string name = "")
         {
-            this.name = name;
+            this.Name = name;
         }
 
         public override string ToString()
         {
-            return $"Column: {name}";
+            return $"Column: {Name}";
         }
     }
 }
